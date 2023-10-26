@@ -5,6 +5,7 @@ import { Card } from "@/components/card";
 import Article from "./article";
 import { Eye } from "lucide-react";
 import { getProjectsFromDB } from "@/libs/getProjectsFromDB";
+import Image from "next/image";
 
 export const revalidate = 60;
 
@@ -24,48 +25,115 @@ export default async function ProjectsPage() {
         </div>
         <div className="w-full h-px bg-zinc-800" />
 
-        <div className="grid grid-cols-1 gap-8 mx-auto lg:grid-cols-2 ">
+        <div className="grid grid-cols-1 gap-8 mx-auto ">
           <Card>
-            <Link href={`/projects/${myprojects.firstProject.$id}`}>
-              <article className="relative w-full h-full p-4 md:p-8">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="text-xs text-zinc-100">
-                    {myprojects.firstProject.published_date ? (
-                      <time dateTime={new Date(myprojects.firstProject.published_date).toISOString()}>
-                        {Intl.DateTimeFormat(undefined, {
-                          dateStyle: "medium",
-                        }).format(new Date(myprojects.firstProject.published_date))}
-                      </time>
-                    ) : (
-                      <span>SOON</span>
-                    )}
-                  </div>
+            <article className="relative w-full h-full p-4 md:p-8">
+              <div className="flex items-center justify-between gap-2 py-5">
+                <div className="text-xs text-zinc-100">
+                  {myprojects.firstProject.published_date ? (
+                    <time
+                      dateTime={new Date(
+                        myprojects.firstProject.published_date
+                      ).toISOString()}
+                    >
+                      {Intl.DateTimeFormat(undefined, {
+                        dateStyle: "medium",
+                      }).format(
+                        new Date(myprojects.firstProject.published_date)
+                      )}
+                    </time>
+                  ) : (
+                    <span>SOON</span>
+                  )}
+                </div>
+                {myprojects.firstProject.project_views && (
                   <span className="flex items-center gap-1 text-xs text-zinc-500">
                     <Eye className="w-4 h-4" />{" "}
                     {/* {myprojects.firstProject.project_views}k */}
-                    {Intl.NumberFormat("en-US", { notation: "compact" }).format(myprojects.firstProject.project_views)}k
+                    {Intl.NumberFormat("en-US", { notation: "compact" }).format(
+                      myprojects.firstProject.project_views
+                    )}
+                    k
                   </span>
-                </div>
+                )}
+              </div>
+              <div className="flex w-full flex-col md:flex-row justify-between">
+                {myprojects.firstProject.project_image && (
+                  <div className="relative overflow-hidden will-change-transform rounded-xl w-full md:w-[45%]">
+                    <div className="pb-[56.25%] lg:pb-0 lg:h-[390px] xl:h-[460px] 2xl:h-[520px] relative">
+                      <Image
+                        id="image:case-study-card:geminai-rising"
+                        alt="GeminAI Rising"
+                        loading="lazy"
+                        decoding="async"
+                        data-nimg="fill"
+                        className="transition-all duration-[0.5s] pointer-events-none select-none"
+                        style={{
+                          position: "absolute",
+                          height: "100%",
+                          width: "100%",
+                          left: "0",
+                          top: "0",
+                          right: "0",
+                          bottom: "0",
+                          objectFit: "contain",
+                          color: "transparent",
+                        }}
+                        sizes="(max-width: 768px) 200vw, (max-width: 1200px) 100vw"
+                        src={myprojects.firstProject.project_image}
+                        height={500}
+                        width={500}
+                      />
+                    </div>
+                  </div>
+                )}
 
-                <h2
-                  id="featured-post"
-                  className="mt-4 text-3xl font-bold text-zinc-100 group-hover:text-white sm:text-4xl font-display"
-                >
-                  {myprojects.firstProject.title}
-                </h2>
-                <p className="mt-4 leading-8 duration-150 text-zinc-400 group-hover:text-zinc-300">
-                  {myprojects.firstProject.description}
-                </p>
-                <div className="absolute bottom-4 md:bottom-8">
-                  <p className="hidden text-zinc-200 hover:text-zinc-50 lg:block">
-                    Read more <span aria-hidden="true">&rarr;</span>
+                <div className="w-full md:w-[45%]">
+                  <h2
+                    id="featured-post"
+                    className="mt-4 text-3xl font-bold text-zinc-100 group-hover:text-white sm:text-4xl font-display"
+                  >
+                    {myprojects.firstProject.title}
+                  </h2>
+                  <p className="mt-4 leading-8 duration-150 text-zinc-400 group-hover:text-zinc-300">
+                    {myprojects.firstProject.description}
                   </p>
+                  <div className="lg:pb-3 my-4 text-zinc-100">
+                    <p className="sr-only">Project technologies used:</p>
+                    <ul
+                      className="flex flex-wrap pl-4 leading-loose list-disc"
+                      title="Project technologies used"
+                    >
+                      {myprojects.firstProject.usetech_list &&
+                        myprojects.firstProject.usetech_list.map(
+                          (item, key) => (
+                            <li className="pr-6 text-sm uppercase" key={key}>
+                              {item}
+                            </li>
+                          )
+                        )}
+                    </ul>
+                  </div>
+                  {myprojects.firstProject.project_url && (
+                    <div className="absolute bottom-4 md:bottom-8">
+                      <button className="focus:outline-none font-semibold underline decoration-neutral-300 dark:decoration-neutral-600 hover:decoration-yellow-300 dark:hover:decoration-yellow-300 cursor-pointer dark:text-white text-neutral-900 text-sm">
+                        <Link
+                          title="Visit the live website"
+                          target="_blank"
+                          rel="noopener noreferrer nofollow"
+                          href={myprojects.firstProject.project_url}
+                        >
+                          Visit the live site&nbsp;→
+                        </Link>
+                      </button>
+                    </div>
+                  )}
                 </div>
-              </article>
-            </Link>
+              </div>
+            </article>
           </Card>
 
-          <div className="flex flex-col w-full gap-8 mx-auto border-t border-gray-900/10 lg:mx-0 lg:border-t-0 ">
+          <div className="flex flex-col md:flex-row w-full gap-8 mx-auto border-t border-gray-900/10 lg:mx-0 lg:border-t-0 ">
             {myprojects.secondAndThirdProjects.map((project) => (
               <Card key={project.$id}>
                 <Article project={project} views={project.project_views} />
@@ -76,11 +144,11 @@ export default async function ProjectsPage() {
         <div className="hidden w-full h-px md:block bg-zinc-800" />
 
         <div className="grid grid-cols-1 gap-4 mx-auto lg:mx-0 md:grid-cols-3">
-            {myprojects.remainingProjects.map((project) => (
-                <Card key={project.$id}>
-                  <Article project={project} views={project.project_views} />
-                </Card>
-              ))}
+          {myprojects.remainingProjects.map((project) => (
+            <Card key={project.$id}>
+              <Article project={project} views={project.project_views} />
+            </Card>
+          ))}
         </div>
       </div>
     </div>
