@@ -6,11 +6,13 @@ import Article from "./article";
 import { Eye } from "lucide-react";
 import { getProjectsFromDB } from "@/libs/getProjectsFromDB";
 import Image from "next/image";
+import { urlFor } from "@/sanity";
 
 export const revalidate = 60;
 
 export default async function ProjectsPage() {
   const myprojects = await getProjectsFromDB();
+  console.log(myprojects.firstProject.technologies);
   return (
     <div className="relative pb-16">
       <Navigation />
@@ -30,17 +32,15 @@ export default async function ProjectsPage() {
             <article className="relative w-full h-full p-4 md:p-8">
               <div className="flex items-center justify-between gap-2 py-5">
                 <div className="text-xs text-zinc-100">
-                  {myprojects.firstProject.published_date ? (
+                  {myprojects.firstProject.publishedAt ? (
                     <time
                       dateTime={new Date(
-                        myprojects.firstProject.published_date
+                        myprojects.firstProject.publishedAt
                       ).toISOString()}
                     >
                       {Intl.DateTimeFormat(undefined, {
                         dateStyle: "medium",
-                      }).format(
-                        new Date(myprojects.firstProject.published_date)
-                      )}
+                      }).format(new Date(myprojects.firstProject.publishedAt))}
                     </time>
                   ) : (
                     <span>SOON</span>
@@ -58,7 +58,7 @@ export default async function ProjectsPage() {
                 )}
               </div>
               <div className="flex w-full flex-col md:flex-row justify-between">
-                {myprojects.firstProject.project_image && (
+                {myprojects.firstProject.mainImage && (
                   <div className="relative overflow-hidden will-change-transform rounded-xl w-full md:w-[45%]">
                     <div className="pb-[56.25%] lg:pb-0 lg:h-[390px] xl:h-[460px] 2xl:h-[520px] relative">
                       <Image
@@ -80,7 +80,7 @@ export default async function ProjectsPage() {
                           color: "transparent",
                         }}
                         sizes="(max-width: 768px) 200vw, (max-width: 1200px) 100vw"
-                        src={myprojects.firstProject.project_image}
+                        src={urlFor(myprojects.firstProject.mainImage).url()}
                         height={500}
                         width={500}
                       />
@@ -96,7 +96,7 @@ export default async function ProjectsPage() {
                     {myprojects.firstProject.title}
                   </h2>
                   <p className="mt-4 leading-8 duration-150 text-zinc-400 group-hover:text-zinc-300">
-                    {myprojects.firstProject.description}
+                    {myprojects.firstProject.shortdescription}
                   </p>
                   <div className="lg:pb-3 my-4 text-zinc-100">
                     <p className="sr-only">Project technologies used:</p>
@@ -104,24 +104,24 @@ export default async function ProjectsPage() {
                       className="flex flex-wrap pl-4 leading-loose list-disc"
                       title="Project technologies used"
                     >
-                      {myprojects.firstProject.usetech_list &&
-                        myprojects.firstProject.usetech_list.map(
+                      {myprojects.firstProject.technologies &&
+                        myprojects.firstProject.technologies.map(
                           (item, key) => (
                             <li className="pr-6 text-sm uppercase" key={key}>
-                              {item}
+                              {item.title}
                             </li>
                           )
                         )}
                     </ul>
                   </div>
-                  {myprojects.firstProject.project_url && (
+                  {myprojects.firstProject.liveLink && (
                     <div className="absolute bottom-4 md:bottom-8">
                       <button className="focus:outline-none font-semibold underline decoration-neutral-300 dark:decoration-neutral-600 hover:decoration-yellow-300 dark:hover:decoration-yellow-300 cursor-pointer dark:text-white text-neutral-900 text-sm">
                         <Link
                           title="Visit the live website"
                           target="_blank"
                           rel="noopener noreferrer nofollow"
-                          href={myprojects.firstProject.project_url}
+                          href={myprojects.firstProject.liveLink}
                         >
                           Visit the live site&nbsp;→
                         </Link>
@@ -135,7 +135,7 @@ export default async function ProjectsPage() {
 
           <div className="flex flex-col md:flex-row w-full gap-8 mx-auto border-t border-gray-900/10 lg:mx-0 lg:border-t-0 ">
             {myprojects.secondAndThirdProjects.map((project) => (
-              <Card key={project.$id}>
+              <Card key={project._id}>
                 <Article project={project} views={project.project_views} />
               </Card>
             ))}
@@ -145,7 +145,7 @@ export default async function ProjectsPage() {
 
         <div className="grid grid-cols-1 gap-4 mx-auto lg:mx-0 md:grid-cols-3">
           {myprojects.remainingProjects.map((project) => (
-            <Card key={project.$id}>
+            <Card key={project._id}>
               <Article project={project} views={project.project_views} />
             </Card>
           ))}

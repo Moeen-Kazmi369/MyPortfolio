@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    reactStrictMode:false,
-    images:{
-        domains:["cloud.appwrite.io"]
-    } 
-}
+  reactStrictMode: false,
+  images: {
+    domains: ["cloud.appwrite.io", "cdn.sanity.io"],
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
